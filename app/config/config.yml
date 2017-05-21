@@ -2,15 +2,16 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: "@ApiBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    locale: en
+    locale: fr
 
 framework:
     #esi:             ~
-    #translator:      { fallbacks: ["%locale%"] }
+    translator:      { fallbacks: ["%locale%"] }
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
@@ -68,3 +69,53 @@ swiftmailer:
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }
+easy_admin:
+    site_name: 'Bar.php'
+    formats:
+        date:     'd/m/Y'
+        time:     'H:i'
+        datetime: 'd/m/Y H:i:s'
+    list:
+        title: 'Liste des %%entity_label%%'
+    design:
+        menu:
+            - { entity: 'Bar', icon: 'beer' }
+            - { entity: 'Categorie'}
+            - { entity: 'Article', icon: 'glass'}
+            - { entity: 'User',icon: 'users' }
+    entities:
+        Bar:
+            class: ApiBundle\Entity\Bar
+            label: 'Bars'
+        Categorie:
+            class: ApiBundle\Entity\Categorie
+            label: 'Catégories'
+        Article:
+            class: ApiBundle\Entity\Article
+            label: 'Articles'
+            list:
+                fields:
+                    - id
+                    - { property: 'name', label: 'Nom' }
+                    - { property: 'prix', label: 'Prix', format: '%01.2f€' }
+                    - { property: 'categorie', label: 'Categorie' }
+        User:
+            class: ApiBundle\Entity\User
+            label: 'Users'
+fos_rest:
+    param_fetcher_listener: true
+    body_listener: true
+    format_listener: true
+    view:
+        view_response_listener: 'force'
+        formats:
+            xml: true
+            json : true
+        templating_formats:
+            html: true
+        force_redirects:
+            html: true
+        failed_validation: HTTP_BAD_REQUEST
+        default_engine: twig
+    routing_loader:
+        default_format: json

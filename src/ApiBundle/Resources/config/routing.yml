@@ -1,0 +1,3 @@
+root:
+    type:     rest
+    resource: ApiBundle\Controller\RootController

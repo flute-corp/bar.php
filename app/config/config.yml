@@ -75,8 +75,6 @@ easy_admin:
         date:     'd/m/Y'
         time:     'H:i'
         datetime: 'd/m/Y H:i:s'
-    list:
-        title: 'Liste des %%entity_label%%'
     design:
         menu:
             - { entity: 'Bar', icon: 'beer' }
@@ -86,22 +84,24 @@ easy_admin:
     entities:
         Bar:
             class: ApiBundle\Entity\Bar
-            label: 'Bars'
         Categorie:
             class: ApiBundle\Entity\Categorie
-            label: 'Catégories'
         Article:
             class: ApiBundle\Entity\Article
-            label: 'Articles'
+            form:
+                fields:
+                    - { property: 'name' }
+                    - { property: 'prix', type: 'money', type_options: { currency: 'EUR' } }
+                    - { property: 'description'}
+                    - { property: 'categorie', type: 'easyadmin_autocomplete' }
             list:
                 fields:
                     - id
-                    - { property: 'name', label: 'Nom' }
-                    - { property: 'prix', label: 'Prix', format: '%01.2f€' }
-                    - { property: 'categorie', label: 'Categorie' }
+                    - { property: 'name'}
+                    - { property: 'prix', type: 'money', type_options: { currency: 'EUR' }  }
+                    - { property: 'categorie' }
         User:
             class: ApiBundle\Entity\User
-            label: 'Users'
 fos_rest:
     param_fetcher_listener: true
     body_listener: true

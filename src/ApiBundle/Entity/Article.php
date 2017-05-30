@@ -2,7 +2,9 @@
 
 namespace ApiBundle\Entity;
 
+use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
+use ApiBundle\Mixin\BlameableEntity;
 
 /**
  * Article
@@ -12,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Article
 {
+
+    use Labelisable;
+    use BlameableEntity;
     /**
      * @var int
      *
@@ -20,13 +25,6 @@ class Article
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    private $name;
 
     /**
      * @var string
@@ -59,30 +57,6 @@ class Article
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Article
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Set description
      *
      * @param string $description
@@ -104,11 +78,6 @@ class Article
     public function getDescription()
     {
         return $this->description;
-    }
-
-    public function __toString()
-    {
-        return $this->getName();
     }
 
     /**

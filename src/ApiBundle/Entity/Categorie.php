@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Entity;
 
+use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Categorie
 {
+
+    use Labelisable;
+
     /**
      * @var int
      *
@@ -20,13 +24,6 @@ class Categorie
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    private $name;
 
     /**
      * @var string
@@ -59,30 +56,6 @@ class Categorie
     }
 
     /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Categorie
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
      * Set icon
      *
      * @param string $icon
@@ -104,11 +77,6 @@ class Categorie
     public function getIcon()
     {
         return $this->icon;
-    }
-
-    public function __toString()
-    {
-        return $this->getName();
     }
 
     /**

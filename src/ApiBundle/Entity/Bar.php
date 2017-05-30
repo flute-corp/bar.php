@@ -2,6 +2,7 @@
 
 namespace ApiBundle\Entity;
 
+use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Bar
 {
+
+    use Labelisable;
+
     /**
      * @var int
      *
@@ -22,16 +26,17 @@ class Bar
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name", type="string", length=255)
-     */
-    private $name;
-
-    /**
      * @ORM\OneToMany(targetEntity="BarArticle", mappedBy="bar")
      */
     private $articles;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->articles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -41,30 +46,6 @@ class Bar
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Set name
-     *
-     * @param string $name
-     *
-     * @return Bar
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * Get name
-     *
-     * @return string
-     */
-    public function getName()
-    {
-        return $this->name;
     }
 
     /**
@@ -83,13 +64,6 @@ class Bar
     public function getArticles()
     {
         return $this->articles;
-    }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->articles = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**

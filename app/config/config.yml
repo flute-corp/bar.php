@@ -90,18 +90,21 @@ easy_admin:
             class: ApiBundle\Entity\Article
             form:
                 fields:
-                    - { property: 'name' }
+                    - { property: 'label' }
                     - { property: 'prix', type: 'money', type_options: { currency: 'EUR' } }
                     - { property: 'description'}
                     - { property: 'categorie', type: 'easyadmin_autocomplete' }
             list:
                 fields:
-                    - id
-                    - { property: 'name'}
-                    - { property: 'prix', type: 'money', type_options: { currency: 'EUR' }  }
+                    - { property: 'label'}
+                    - { property: 'prix', format: '%01.2f€' }
                     - { property: 'categorie' }
+                    - { property: 'created_by'}
+                    - { property: 'updated_by'}
         User:
             class: ApiBundle\Entity\User
+
+
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
@@ -119,3 +122,8 @@ fos_rest:
         default_engine: twig
     routing_loader:
         default_format: json
+stof_doctrine_extensions:
+    default_locale: fr_FR
+    orm:
+        default:
+            blameable: true

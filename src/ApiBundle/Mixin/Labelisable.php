@@ -2,12 +2,14 @@
 namespace ApiBundle\Mixin;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 trait Labelisable {
     /**
      * @var string
      *
      * @ORM\Column(name="label", type="string", length=255, unique=true)
+     * @JMS\Groups({"getArticles","getCategories", "getUsers", "postUsers"})
      */
     protected $label;
 

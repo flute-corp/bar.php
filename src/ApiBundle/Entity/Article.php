@@ -5,6 +5,7 @@ namespace ApiBundle\Entity;
 use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
 use ApiBundle\Mixin\BlameableEntity;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Article
@@ -23,6 +24,8 @@ class Article
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Groups({"getArticles"})
      */
     private $id;
 
@@ -30,6 +33,7 @@ class Article
      * @var string
      *
      * @ORM\Column(name="description", type="text")
+     * @JMS\Groups({"getArticles"})
      */
     private $description;
 
@@ -43,6 +47,7 @@ class Article
      * @var float
      *
      * @ORM\Column(name="prix", type="float")
+     * @JMS\Groups({"getArticles"})
      */
     private $prix;
 
@@ -96,6 +101,15 @@ class Article
     public function getCategorie()
     {
         return $this->categorie;
+    }
+
+    /**
+     * @JMS\VirtualProperty()
+     * @JMS\SerializedName("categorie")
+     * @JMS\Groups({"getArticles"})
+     */
+    public function getIdCategorie() {
+        return $this->getCategorie()->getId();
     }
 
     /**

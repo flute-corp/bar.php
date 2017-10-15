@@ -1,3 +1,9 @@
-root:
+cartes:
     type:     rest
-    resource: ApiBundle\Controller\RootController
+    resource: ApiBundle\Controller\BarsController
+articles:
+    type:     rest
+    resource: ApiBundle\Controller\ArticlesController
+users:
+    type:     rest
+    resource: ApiBundle\Controller\UsersController

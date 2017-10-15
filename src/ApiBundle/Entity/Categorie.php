@@ -4,6 +4,7 @@ namespace ApiBundle\Entity;
 
 use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Category
@@ -22,6 +23,7 @@ class Categorie
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups({"getCategories"})
      */
     private $id;
 
@@ -29,6 +31,7 @@ class Categorie
      * @var string
      *
      * @ORM\Column(name="icon", type="string", length=255)
+     * @JMS\Groups({"getCategories"})
      */
     private $icon;
 

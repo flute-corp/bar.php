@@ -2,3 +2,5 @@ services:
 #    api.example:
 #        class: ApiBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
+    apibundle.util.inflector:
+      class: ApiBundle\Util\Inflector\NoopInflector

@@ -103,16 +103,24 @@ easy_admin:
                     - { property: 'updated_by'}
         User:
             class: ApiBundle\Entity\User
-
+            form:
+                fields:
+                    - { property: 'username' }
+                    - { property: 'label'}
+                    - { property: 'favoris', type: 'easyadmin_autocomplete' }
+sensio_framework_extra:
+    request:
+        converters: true
 
 fos_rest:
     param_fetcher_listener: true
     body_listener: true
     format_listener: true
+    body_converter:
+        enabled: true
     view:
         view_response_listener: 'force'
         formats:
-            xml: true
             json : true
         templating_formats:
             html: true
@@ -122,6 +130,11 @@ fos_rest:
         default_engine: twig
     routing_loader:
         default_format: json
+    service:
+        inflector: apibundle.util.inflector
+    exception:
+        messages:
+            'Symfony\Component\HttpKernel\Exception\HttpException': true
 stof_doctrine_extensions:
     default_locale: fr_FR
     orm:

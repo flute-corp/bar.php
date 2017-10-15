@@ -5,6 +5,7 @@ namespace ApiBundle\Entity;
 use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * User
@@ -22,16 +23,21 @@ class User implements UserInterface
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Groups({"getUsers"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
+     * @JMS\Groups({"postUsers"})
      */
     private $username;
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @JMS\Groups({"postUsers"})
+     * @JMS\Accessor(setter="setPassword")
      */
     private $password;
 
@@ -41,6 +47,8 @@ class User implements UserInterface
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id", unique=true)}
      *      )
+     * @JMS\SerializedName("pref")
+     * @JMS\Groups({"postUsers"})
      */
     private $favoris;
 
@@ -59,9 +67,13 @@ class User implements UserInterface
 
     public function getSalt()
     {
-        // you *may* need a real salt depending on your encoder
-        // see section on salt below
         return null;
+    }
+
+    public function setPassword($pass) {
+        $this->password = password_hash($pass, PASSWORD_BCRYPT, ['cost' => 13]);
+
+        return $this;
     }
 
     public function getPassword()
@@ -144,5 +156,23 @@ class User implements UserInterface
     public function getFavoris()
     {
         return $this->favoris;
+    }
+
+    /**
+     * Get array id Favoris
+     *
+     * @JMS\VirtualProperty()
+     *
+     * @JMS\Groups({"getUsers"})
+     * @JMS\SerializedName("pref")
+     */
+    public function getArrayIdFavoris() {
+        $aFav = $this->getFavoris();
+        if ($aFav) {
+            return $aFav->map(function (Article $oArticle) {
+                return $oArticle->getId();
+            });
+        }
+        return array();
     }
 }

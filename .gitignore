@@ -45,7 +45,7 @@
 /composer.phar
 
 # Backup entities generated with doctrine:generate:entities command
-*/Entity/*~
+**/Entity/*~
 
 # Symfony gitignore
 /app/config/parameters.yml
@@ -67,3 +67,4 @@
 
 # Dep
 bower_components
+.idea

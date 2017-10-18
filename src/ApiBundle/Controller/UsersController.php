@@ -31,6 +31,11 @@ class UsersController extends Controller
         return $oUser;
     }
 
+    protected function _logHas(User $oUser) {
+        $oToken = new UsernamePasswordToken($oUser, null, "main", $oUser->getRoles());
+        $this->get('security.token_storage')->setToken($oToken);
+    }
+
     /**
      * @param User $oUser
      * @return User
@@ -51,6 +56,11 @@ class UsersController extends Controller
             if ($oLoggedUser != $oUser) {
                 throw new AccessDeniedHttpException('Vous ne pouvez modifier que votre profil');
             }
+        } else {
+            $this->_logHas($oUser);
+        }
+        if ($oUser->getLabel() === null) {
+            $oUser->setLabel($oUser->getUsername());
         }
         $em->persist($oUser);
         $em->flush();
@@ -85,8 +95,7 @@ class UsersController extends Controller
             if ($oUser) {
                 $srvEncoder = $this->get('security.password_encoder');
                 if ($srvEncoder->isPasswordValid($oUser, $param['password'])) {
-                    $oToken = new UsernamePasswordToken($oUser, null, "main", $oUser->getRoles());
-                    $this->get('security.token_storage')->setToken($oToken);
+                    $this->_logHas($oUser);
                     return $oUser;
                 }
             }

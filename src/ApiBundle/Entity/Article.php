@@ -105,7 +105,7 @@ class Article
 
     /**
      * @JMS\VirtualProperty()
-     * @JMS\SerializedName("categorie")
+     * @JMS\SerializedName("cat")
      * @JMS\Groups({"getArticles"})
      */
     public function getIdCategorie() {

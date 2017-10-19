@@ -44,8 +44,8 @@ security:
                 path:   /logout
                 target: /
     access_control:
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY} # Activation de la page de login
-        - { path: ^/user } # Activation de la page de register
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Activation de la page de login
+        - { path: ^/user, roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER] } # Activation de la page de register
 
         - { path: ^/, roles: ROLE_USER, methods: [POST] }       # Blocage de toutes les autres requètes POST
         - { path: ^/admin, roles: ROLE_USER }                   # Blocage complet de l'interface d'aministration

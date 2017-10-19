@@ -46,6 +46,7 @@ class UsersController extends Controller
 
     /**
      * @param User $oUser
+     *
      * @return User
      *
      * @JMS\QueryParam(name="oUser")
@@ -55,10 +56,10 @@ class UsersController extends Controller
      *     converter="fos_rest.request_body",
      *     options={"deserializationContext"={"groups"={"postUsers"}}}
      * )
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
-    public function postUserAction(User $oUser, ConstraintViolationListInterface $validationErrors) {
-        $this->checkErrors($validationErrors);
+    public function postUserAction(User $oUser, ConstraintViolationListInterface $validationErrors = null) {
+        if ($validationErrors) $this->checkErrors($validationErrors);
         $em = $this->getDoctrine()->getManager();
         $id = $oUser->getId();
 
@@ -80,9 +81,6 @@ class UsersController extends Controller
             }
             throw new ServiceUnavailableHttpException('L\'enregistrement de l\'utilisateur à échouée...');
         }
-        if (!$id && !$this->isGranted('ROLE_USER')) {
-            $this->_logHas($oUser);
-        }
 
         return $oUser;
     }
@@ -90,7 +88,7 @@ class UsersController extends Controller
     /**
      * @return bool|mixed
      *
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
     public function getLoginAction() {
         if ($this->isGranted('ROLE_USER')) {
@@ -103,7 +101,7 @@ class UsersController extends Controller
      * @param Request $request
      * @return User|null|object
      *
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
     public function postLoginAction(Request $request) {
         $param = $request->request->all();
@@ -122,6 +120,26 @@ class UsersController extends Controller
 
         throw new AccessDeniedHttpException('Combinaison user / password incorrecte');
     }
+    /**
+     * @param User $oUser
+     *
+     * @return User
+     *
+     * @JMS\QueryParam(name="oUser")
+     * @ParamConverter(
+     *     "oUser",
+     *     class="ApiBundle\Entity\User",
+     *     converter="fos_rest.request_body",
+     *     options={"deserializationContext"={"groups"={"postUsers"}}}
+     * )
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
+     */
+    public function postRegisterAction(User $oUser, ConstraintViolationListInterface $validationErrors = null) {
+        $this->postUserAction($oUser, $validationErrors);
 
+        $this->_logHas($oUser);
+
+        return $oUser;
+    }
 
 }

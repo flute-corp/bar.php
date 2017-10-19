@@ -31,7 +31,7 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
-     * @JMS\Groups({"postUsers"})
+     * @JMS\Groups({"getLogin","postUsers"})
      * @Assert\NotBlank(message="Un nom d'utilisateur est obligatoire")
      */
     private $username;

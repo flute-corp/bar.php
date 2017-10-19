@@ -3,11 +3,14 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\User;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations as JMS;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class UsersController extends Controller
@@ -51,19 +54,28 @@ class UsersController extends Controller
      */
     public function postUserAction(User $oUser) {
         $em = $this->getDoctrine()->getManager();
-        if ($oUser->getId()) {
+        $id = $oUser->getId();
+        if ($id) {
             $oLoggedUser = $this->get('security.token_storage')->getToken()->getUser();
             if ($oLoggedUser != $oUser) {
                 throw new AccessDeniedHttpException('Vous ne pouvez modifier que votre profil');
             }
-        } else {
-            $this->_logHas($oUser);
         }
         if ($oUser->getLabel() === null) {
             $oUser->setLabel($oUser->getUsername());
         }
         $em->persist($oUser);
-        $em->flush();
+        try {
+            $em->flush();
+        } catch (\Exception $e) {
+            if ($e instanceof UniqueConstraintViolationException) {
+                throw new ConflictHttpException('Cet utilisateur est déjà utilisé');
+            }
+            throw new ServiceUnavailableHttpException('L\'enregistrement de l\'utilisateur à échouée...');
+        }
+        if (!$id) {
+            $this->_logHas($oUser);
+        }
 
         return $oUser;
     }

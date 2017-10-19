@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\User;
+use ApiBundle\Mixin\ConstraintViolationValidable;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -12,9 +13,13 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UsersController extends Controller
 {
+
+    use ConstraintViolationValidable;
+
     /**
      * @JMS\View(serializerGroups={"getUsers"})
      * @return \ApiBundle\Entity\User[]
@@ -52,11 +57,13 @@ class UsersController extends Controller
      * )
      * @JMS\View(serializerGroups={"getUsers"})
      */
-    public function postUserAction(User $oUser) {
+    public function postUserAction(User $oUser, ConstraintViolationListInterface $validationErrors) {
+        $this->checkErrors($validationErrors);
         $em = $this->getDoctrine()->getManager();
         $id = $oUser->getId();
+
+        $oLoggedUser = $this->get('security.token_storage')->getToken()->getUser();
         if ($id) {
-            $oLoggedUser = $this->get('security.token_storage')->getToken()->getUser();
             if ($oLoggedUser != $oUser) {
                 throw new AccessDeniedHttpException('Vous ne pouvez modifier que votre profil');
             }
@@ -73,7 +80,7 @@ class UsersController extends Controller
             }
             throw new ServiceUnavailableHttpException('L\'enregistrement de l\'utilisateur à échouée...');
         }
-        if (!$id) {
+        if (!$id && !$this->isGranted('ROLE_USER')) {
             $this->_logHas($oUser);
         }
 

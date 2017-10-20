@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\User;
+use ApiBundle\Mixin\ConstraintViolationValidable;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -12,9 +13,13 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 class UsersController extends Controller
 {
+
+    use ConstraintViolationValidable;
+
     /**
      * @JMS\View(serializerGroups={"getUsers"})
      * @return \ApiBundle\Entity\User[]
@@ -41,6 +46,7 @@ class UsersController extends Controller
 
     /**
      * @param User $oUser
+     *
      * @return User
      *
      * @JMS\QueryParam(name="oUser")
@@ -50,13 +56,15 @@ class UsersController extends Controller
      *     converter="fos_rest.request_body",
      *     options={"deserializationContext"={"groups"={"postUsers"}}}
      * )
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
-    public function postUserAction(User $oUser) {
+    public function postUserAction(User $oUser, ConstraintViolationListInterface $validationErrors = null) {
+        if ($validationErrors) $this->checkErrors($validationErrors);
         $em = $this->getDoctrine()->getManager();
         $id = $oUser->getId();
+
+        $oLoggedUser = $this->get('security.token_storage')->getToken()->getUser();
         if ($id) {
-            $oLoggedUser = $this->get('security.token_storage')->getToken()->getUser();
             if ($oLoggedUser != $oUser) {
                 throw new AccessDeniedHttpException('Vous ne pouvez modifier que votre profil');
             }
@@ -73,9 +81,6 @@ class UsersController extends Controller
             }
             throw new ServiceUnavailableHttpException('L\'enregistrement de l\'utilisateur à échouée...');
         }
-        if (!$id) {
-            $this->_logHas($oUser);
-        }
 
         return $oUser;
     }
@@ -83,7 +88,7 @@ class UsersController extends Controller
     /**
      * @return bool|mixed
      *
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
     public function getLoginAction() {
         if ($this->isGranted('ROLE_USER')) {
@@ -96,7 +101,7 @@ class UsersController extends Controller
      * @param Request $request
      * @return User|null|object
      *
-     * @JMS\View(serializerGroups={"getUsers"})
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
      */
     public function postLoginAction(Request $request) {
         $param = $request->request->all();
@@ -115,6 +120,26 @@ class UsersController extends Controller
 
         throw new AccessDeniedHttpException('Combinaison user / password incorrecte');
     }
+    /**
+     * @param User $oUser
+     *
+     * @return User
+     *
+     * @JMS\QueryParam(name="oUser")
+     * @ParamConverter(
+     *     "oUser",
+     *     class="ApiBundle\Entity\User",
+     *     converter="fos_rest.request_body",
+     *     options={"deserializationContext"={"groups"={"postUsers"}}}
+     * )
+     * @JMS\View(serializerGroups={"getUsers","getLogin"})
+     */
+    public function postRegisterAction(User $oUser, ConstraintViolationListInterface $validationErrors = null) {
+        $this->postUserAction($oUser, $validationErrors);
 
+        $this->_logHas($oUser);
+
+        return $oUser;
+    }
 
 }

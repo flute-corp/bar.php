@@ -6,6 +6,7 @@ use ApiBundle\Mixin\Labelisable;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use JMS\Serializer\Annotation as JMS;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * User
@@ -30,7 +31,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=25, unique=true)
-     * @JMS\Groups({"postUsers"})
+     * @JMS\Groups({"getLogin","postUsers"})
+     * @Assert\NotBlank(message="Un nom d'utilisateur est obligatoire")
      */
     private $username;
 
@@ -45,7 +47,7 @@ class User implements UserInterface
      * @ORM\ManyToMany(targetEntity="Article")
      * @ORM\JoinTable(name="users_articles",
      *      joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id", unique=true)}
+     *      inverseJoinColumns={@ORM\JoinColumn(name="article_id", referencedColumnName="id")}
      *      )
      * @JMS\SerializedName("pref")
      * @JMS\Groups({"postUsers"})

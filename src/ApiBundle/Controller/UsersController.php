@@ -46,6 +46,7 @@ class UsersController extends Controller
 
     /**
      * @param User $oUser
+     * @param ConstraintViolationListInterface $validationErrors
      *
      * @return User
      *
@@ -122,7 +123,7 @@ class UsersController extends Controller
     }
     /**
      * @param User $oUser
-     *
+     * @param ConstraintViolationListInterface $validationErrors
      * @return User
      *
      * @JMS\QueryParam(name="oUser")

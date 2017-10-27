@@ -34,6 +34,7 @@ class Article
      *
      * @ORM\Column(name="description", type="text")
      * @JMS\Groups({"getArticles"})
+     * @JMS\SerializedName("desc")
      */
     private $description;
 

@@ -7,3 +7,7 @@ articles:
 users:
     type:     rest
     resource: ApiBundle\Controller\UsersController
+notifications:
+    type:     rest
+    resource: ApiBundle\Controller\NotificationsController
+    prefix:   notifications

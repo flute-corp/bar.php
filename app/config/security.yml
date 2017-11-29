@@ -46,7 +46,7 @@ security:
     access_control:
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY } # Activation de la page de login
         - { path: ^/register, methods: [GET, POST], roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER] } # Activation de la page de register
-        - { path: ^/notifications/subscription, methods: [POST, DELETE], roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER] }
+        - { path: ^/notifications/subscription, roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER] }
 #        - { path: ^/notifications/subscription, methods: [POST], roles: [IS_AUTHENTICATED_ANONYMOUSLY, ROLE_USER] }
 
         - { path: ^/, roles: ROLE_USER, methods: [POST] }       # Blocage de toutes les autres requètes POST

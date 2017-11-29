@@ -13,21 +13,38 @@ class NotificationsController extends Controller
 {
 
     public function getAperoAction() {
-        $em = $this->getDoctrine()->getManager();
-        $webPush = $this->get('minishlink_web_push');
-        $aSubscription = $em->getRepository('ApiBundle:PushSubscription')->findAll();
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, 'bar.nexk.fr/api/web/notifications/subscription');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
-        foreach ($aSubscription as $oSub) {
-            $webPush->sendNotification(
-                $oSub->getEndpoint(),
-                '{}', // optional (defaults null)
-                $oSub->getP256dh(), // optional (defaults null)
-                $oSub->getAuth() // optional (defaults null)
-            );
+        $response = curl_exec($ch);
+
+// If using JSON...
+        $data = json_decode($response);
+
+        if ($data) {
+            $webPush = $this->get('minishlink_web_push');
+
+            foreach ($data as $oSub) {
+                $webPush->sendNotification(
+                    $oSub["endpoint"],
+                    '{}', // optional (defaults null)
+                    $oSub["p256dh"], // optional (defaults null)
+                    $oSub["auth"] // optional (defaults null)
+                );
+            }
+            return $webPush->flush();
         }
-        $webPush->flush();
-        return true;
+
+        return 'nope.jpg';
     }
+
+    public function getSubscriptionAction() {
+        $em = $this->getDoctrine()->getManager();
+        $aSubscription = $em->getRepository('ApiBundle:PushSubscription')->findAll();
+        return $aSubscription;
+    }
+
     /**
      * @param PushSubscription $oSubscription
      * @param ConstraintViolationListInterface $validationErrors

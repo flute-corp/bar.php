@@ -141,3 +141,17 @@ stof_doctrine_extensions:
     orm:
         default:
             blameable: true
+minishlink_web_push:
+    api_keys:                         # you should put api keys in your "app/config/parameters.yml" file
+        GCM: "%push_gcm%"
+    VAPID:
+        subject: https://bar.nexk.fr  # can be an URL or a mailto:
+        publicKey: BGuXIbVqIJus84UH-TlLZv2hwaN7gpPhTZUGJJzGSBV2J0Qjt0cYvoswh8V-NMTQIoApscm2Fc0C5gVmRjBIGp8          # uncompressed public key P-256 encoded in Base64-URL
+        privateKey: "%push_private_key%"         # the secret multiplier of the private key encoded in Base64-URL
+#        pemFile: path/to/pem          # if you have a PEM file and can link to it on your filesystem
+#        pem: pemFileContent           # if you have a PEM file and want to hardcode its content
+    ttl: 2419200                    # Time to Live of notifications in seconds
+    urgency: ~                      # can be very-low / low / normal / high
+    topic: ~                        # default identifier for your notifications
+    timeout: 30                     # Timeout of each request in seconds
+    automatic_padding: true         # pad messages automatically for better security (against more bandwith usage)

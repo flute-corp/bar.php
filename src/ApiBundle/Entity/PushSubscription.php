@@ -3,6 +3,7 @@
 namespace ApiBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * PushSubscription
@@ -24,16 +25,26 @@ class PushSubscription
     /**
      * @var string
      *
-     * @ORM\Column(name="endpoint", type="string", length=255)
+     * @ORM\Column(name="endpoint", type="string", length=255, unique=true)
+     * @JMS\Groups({"postSubscription"})
      */
     private $endpoint;
 
     /**
-     * @var PushKey
+     * @var string
      *
-     * @ORM\OneToOne(targetEntity="PushKey", inversedBy="id", cascade={"all"})
+     * @ORM\Column(name="p256dh", type="string", length=255)
+     * @JMS\Groups({"postSubscription"})
      */
-    private $keys;
+    private $p256dh;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="auth", type="string", length=255)
+     * @JMS\Groups({"postSubscription"})
+     */
+    private $auth;
 
     /**
      * Get id
@@ -70,21 +81,51 @@ class PushSubscription
     }
 
     /**
-     * @param PushKey $keys
+     * Set p256dh
+     *
+     * @param string $p256dh
+     *
      * @return PushSubscription
      */
-    public function setKeys(PushKey $keys)
+    public function setP256dh($p256dh)
     {
-        $this->keys = $keys;
+        $this->p256dh = $p256dh;
+
         return $this;
     }
 
     /**
-     * @return PushKey
+     * Get p256dh
+     *
+     * @return string
      */
-    public function getKeys()
+    public function getP256dh()
     {
-        return $this->keys;
+        return $this->p256dh;
+    }
+
+    /**
+     * Set auth
+     *
+     * @param string $auth
+     *
+     * @return PushSubscription
+     */
+    public function setAuth($auth)
+    {
+        $this->auth = $auth;
+
+        return $this;
+    }
+
+    /**
+     * Get auth
+     *
+     * @return string
+     */
+    public function getAuth()
+    {
+        return $this->auth;
     }
 }
 

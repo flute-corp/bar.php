@@ -3,6 +3,7 @@
 namespace ApiBundle\Controller;
 
 use ApiBundle\Entity\PushSubscription;
+use Doctrine\DBAL\Exception\ConstraintViolationException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\Controller\Annotations as JMS;
@@ -20,12 +21,12 @@ class NotificationsController extends Controller
             $webPush->sendNotification(
                 $oSub->getEndpoint(),
                 '{}', // optional (defaults null)
-                $oSub->getKeys()->getP256dh(), // optional (defaults null)
-                $oSub->getKeys()->getAuth() // optional (defaults null)
+                $oSub->getP256dh(), // optional (defaults null)
+                $oSub->getAuth() // optional (defaults null)
             );
         }
-
-        return $webPush->flush();
+        $webPush->flush();
+        return true;
     }
     /**
      * @param PushSubscription $oSubscription
@@ -36,20 +37,25 @@ class NotificationsController extends Controller
      * @ParamConverter(
      *     "oSubscription",
      *     class="ApiBundle\Entity\PushSubscription",
-     *     converter="fos_rest.request_body"
+     *     converter="fos_rest.request_body",
+     *     options={"deserializationContext"={"groups"={"postSubscription"}}}
      * )
      * @JMS\View()
      */
     public function postSubscriptionAction(PushSubscription $oSubscription, ConstraintViolationListInterface $validationErrors = null) {
         $em = $this->getDoctrine()->getManager();
 
-        $em->persist($oSubscription);
-        $em->flush();
+        try {
+            $em->persist($oSubscription);
+            $em->flush();
+        } catch (ConstraintViolationException $exception) {
+            return $em->getRepository('ApiBundle:PushSubscription')->findOneBy(array('endpoint' => $oSubscription->getEndpoint()));
+        }
 
         return $oSubscription;
     }
 
-    public function getUnsubscriptionAction(PushSubscription $id) {
+    public function deleteSubscriptionAction(PushSubscription $id) {
         $em = $this->getDoctrine()->getManager();
         $em->remove($id);
         $em->flush();

@@ -32,7 +32,8 @@
         "friendsofsymfony/rest-bundle": "^2.1",
         "javiereguiluz/easyadmin-bundle": "^1.16",
         "jms/serializer-bundle": "^2.0",
-        "stof/doctrine-extensions-bundle": "^1.2"
+        "stof/doctrine-extensions-bundle": "^1.2",
+        "minishlink/web-push-bundle": "^1.4"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
@@ -53,11 +54,6 @@
         "post-update-cmd": [
             "@symfony-scripts"
         ]
-    },
-    "config": {
-        "platform": {
-            "php": "5.5.9"
-        }
     },
     "extra": {
         "symfony-app-dir": "app",

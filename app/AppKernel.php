@@ -21,6 +21,7 @@ class AppKernel extends Kernel
             new FOS\RestBundle\FOSRestBundle(),
             new JMS\SerializerBundle\JMSSerializerBundle(),
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
+            new Minishlink\Bundle\WebPushBundle\MinishlinkWebPushBundle(),
             new ApiBundle\ApiBundle()
         ];
 

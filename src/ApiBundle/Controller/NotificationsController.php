@@ -27,10 +27,10 @@ class NotificationsController extends Controller
 
             foreach ($data as $oSub) {
                 $webPush->sendNotification(
-                    $oSub["endpoint"],
+                    $oSub->endpoint,
                     '{}', // optional (defaults null)
-                    $oSub["p256dh"], // optional (defaults null)
-                    $oSub["auth"] // optional (defaults null)
+                    $oSub->p256dh, // optional (defaults null)
+                    $oSub->auth // optional (defaults null)
                 );
             }
             return $webPush->flush();
@@ -39,6 +39,11 @@ class NotificationsController extends Controller
         return 'nope.jpg';
     }
 
+    /**
+     * @return PushSubscription[]|array
+     *
+     * @JMS\View()
+     */
     public function getSubscriptionAction() {
         $em = $this->getDoctrine()->getManager();
         $aSubscription = $em->getRepository('ApiBundle:PushSubscription')->findAll();

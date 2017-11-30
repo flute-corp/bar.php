@@ -33,7 +33,19 @@ class NotificationsController extends Controller
                     $oSub->auth // optional (defaults null)
                 );
             }
-            return $webPush->flush();
+            $aResult = $webPush->flush();
+            if ($aResult && is_array($aResult)) {
+                foreach ($aResult as $k => &$el) {
+                    if (isset($el["content"])) {
+                        unset($el["content"]);
+                    }
+                    $el = array(
+                        "id" => $data[$k]->id,
+                        "success" => $el["success"]
+                    );
+                }
+            }
+            return $aResult;
         }
 
         return 'nope.jpg';
